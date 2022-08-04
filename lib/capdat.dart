@@ -30,7 +30,7 @@ class _capdatState extends State<capdat> {
   bool _isSearching = false;
   bool confirmacion = false;
   bool isCharging = false;
-  
+
   final TextEditingController _searchQuery = TextEditingController();
   List<listitems> litems = [
     listitems(Icons.cloud_download_outlined, 'Base de datos', true, 1),
@@ -892,27 +892,6 @@ class _capdatState extends State<capdat> {
     );
   }
 }
-// id: cargar[1],
-//       nombre: cargar[2],
-//       identificacion: cargar[3],
-//       numcuenta: cargar[4],
-//       nummedidor: cargar[5],
-//       marcamedidor: cargar[6],
-//       direccion: cargar[7],
-//       ruta: cargar[8],
-//       ordruta: cargar[9],
-//       ultconsumo: cargar[10],
-//       fechaultconsumo: cargar[11],
-//       promedio: cargar[12],
-//       idlector: cargar[13],
-//       tiempo: fecha,
-//       sensor: cargar[15],
-//       consumo: _consumo,
-//       novedad: novedadcons,
-//       cordenadax: coordenadas[0], //latitud
-//       cordenaday: coordenadas[1], //longitud
-//       img: cargar[20],
-//       lecturainicial: cargar[21]
 
 void eliminarFoto(usuario e) async {
   await datab.update(usuario(
