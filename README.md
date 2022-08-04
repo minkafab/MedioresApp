@@ -1,2 +1,2 @@
-# MedioresApp
-Aplicacion de Lectura de Medidores Flutter
+# MedidoresFlutterApp
+Aplicación de lectura de medidores 

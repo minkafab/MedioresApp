@@ -1,0 +1,77 @@
+// @dart=2.9
+
+class usuario {
+  int id;
+  String nombre;
+  String identificacion;
+  String numcuenta;
+  String nummedidor;
+  String marcamedidor;
+  String direccion;
+  String ruta;
+  String ordruta;
+  String ultconsumo;
+  String fechaultconsumo;
+  String promedio;
+  String idlector;
+  String tiempo;
+  String sensor;
+  String consumo;
+  String novedad;
+  String cordenadax;
+  String cordenaday;
+  String img;
+  String lecturainicial;
+  String aclaracion;
+
+  usuario(
+      {this.id,
+      this.nombre,
+      this.identificacion,
+      this.numcuenta,
+      this.nummedidor,
+      this.marcamedidor,
+      this.direccion,
+      this.ruta,
+      this.ordruta,
+      this.ultconsumo,
+      this.fechaultconsumo,
+      this.promedio,
+      this.idlector,
+      this.tiempo,
+      this.sensor,
+      this.consumo,
+      this.novedad,
+      this.cordenadax,
+      this.cordenaday,
+      this.img,
+      this.lecturainicial,
+      this.aclaracion});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'nombre': nombre,
+      'identificacion': identificacion,
+      'numcuenta': numcuenta,
+      'nummedidor': nummedidor,
+      'marcamedidor': marcamedidor,
+      'direccion': direccion,
+      'ruta': ruta,
+      'ordruta': ordruta,
+      'ultconsumo': ultconsumo,
+      'fechaultconsumo': fechaultconsumo,
+      'promedio': promedio,
+      'idlector': idlector,
+      'tiempo': tiempo,
+      'sensor': sensor,
+      'consumo': consumo,
+      'novedad': novedad,
+      'cordenadax': cordenadax,
+      'cordenaday': cordenaday,
+      'img': img,
+      'lecturainicial': lecturainicial,
+      'aclaracion': aclaracion,
+    };
+  }
+}
