@@ -1,16 +1,24 @@
 //@dart=2.9
 import 'dart:ffi';
+import 'dart:typed_data';
+import 'dart:convert';
+import 'dart:ui' as ui;
 
-import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:milton/dats.dart';
 import 'package:flutter/material.dart';
 import 'package:milton/picture.dart';
 import 'package:milton/userdat.dart';
-import 'package:milton/cam.dart';
 import 'package:milton/basedat.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
+import 'package:bluetooth_print/bluetooth_print.dart';
+import 'package:bluetooth_print/bluetooth_print_model.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart' as lib_pdf;
+import 'package:pdf/widgets.dart' as pw;
+import 'package:native_pdf_renderer/native_pdf_renderer.dart' as render_pdf;
 
 class capdat extends StatefulWidget {
   @override
@@ -18,6 +26,36 @@ class capdat extends StatefulWidget {
 }
 
 class _capdatState extends State<capdat> {
+  BluetoothPrint bluetoothPrint = BluetoothPrint.instance;
+  String caracteresEspeciales = "ÜüÁáÉéÍíÓóÚúÑñÅÆØåæø";
+  // caracteres especiales en Uint8s
+  List<int> codigoCaracteresEspeciales = [
+    0xDC,
+    0xFC,
+    0xC1,
+    0xE1,
+    0xC9,
+    0xE9,
+    0xCD,
+    0xED,
+    0xD3,
+    0xF3,
+    0xDA,
+    0xFA,
+    0xD1,
+    0xF1,
+    0xC5,
+    0xC6,
+    0xD8,
+    0xE5,
+    0xE6,
+    0xF8
+  ];
+
+  bool _connected = false;
+  BluetoothDevice _device;
+  String tips = 'No hay impresora conectada';
+
   int cont = 0;
   bool refrescar = true;
   BuildContext dialogcontex;
@@ -30,6 +68,286 @@ class _capdatState extends State<capdat> {
   bool _isSearching = false;
   bool confirmacion = false;
   bool isCharging = false;
+
+  String stringToUint8List(String string) {
+    String s_sub;
+    if (string.length < 1) return string;
+    if (string == null) return string;
+
+    for (int i = 0; i < string.length; i++) {
+      //
+      s_sub = string.substring(i, i + 1);
+      if (caracteresEspeciales.contains(s_sub)) {
+        string = string.replaceRange(i, i + 1,
+            '${codigoCaracteresEspeciales[caracteresEspeciales.indexOf(s_sub)]}');
+      } else {
+        string = string.replaceRange(i, i + 1, s_sub);
+      }
+    }
+    return string;
+  }
+
+  Future<void> initBluetooth() async {
+    bluetoothPrint.startScan(timeout: Duration(seconds: 4));
+
+    bool isConnected = await bluetoothPrint.isConnected;
+
+    bluetoothPrint.state.listen((state) {
+      print('cur device status: $state');
+
+      switch (state) {
+        case BluetoothPrint.CONNECTED:
+          setState(() {
+            _connected = true;
+            tips = 'Conectado';
+          });
+          break;
+        case BluetoothPrint.DISCONNECTED:
+          setState(() {
+            _connected = false;
+            tips = 'Desconectado';
+          });
+          break;
+        default:
+          break;
+      }
+    });
+
+    if (!mounted) return;
+
+    if (isConnected) {
+      setState(() {
+        _connected = true;
+      });
+    }
+  }
+
+// Mostrar dispositives Bluetooth
+  void showPrintDialog(usuario usuario) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Selecciona un dispositivo'),
+          content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+            return RefreshIndicator(
+              onRefresh: () =>
+                  bluetoothPrint.startScan(timeout: Duration(seconds: 4)),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          child: Text(tips),
+                        ),
+                      ],
+                    ),
+                    Divider(),
+                    StreamBuilder<List<BluetoothDevice>>(
+                      stream: bluetoothPrint.scanResults,
+                      initialData: [],
+                      builder: (c, snapshot) => Column(
+                        children: snapshot.data
+                            .map((d) => ListTile(
+                                  title: Text(d.name ?? ''),
+                                  subtitle: Text(d.address),
+                                  onTap: () async {
+                                    setState(() {
+                                      _device = d;
+                                    });
+                                  },
+                                  trailing: _device != null &&
+                                          _device.address == d.address
+                                      ? Icon(
+                                          Icons.check,
+                                          color: Colors.green,
+                                        )
+                                      : null,
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                    Divider(),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(20, 5, 20, 10),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              OutlinedButton(
+                                child: Text('Conectar'),
+                                onPressed: _connected
+                                    ? null
+                                    : () async {
+                                        if (_device != null &&
+                                            _device.address != null) {
+                                          await bluetoothPrint.connect(_device);
+                                          setState(() {
+                                            _connected = true;
+                                            tips = 'Conectado';
+                                          });
+                                        } else {
+                                          setState(() {
+                                            tips = 'Seleccione un dispositivo';
+                                          });
+                                          print('Seleccione un dispositivo');
+                                        }
+                                      },
+                              ),
+                              SizedBox(width: 10.0),
+                              OutlinedButton(
+                                child: Text('Desconectar'),
+                                onPressed: _connected
+                                    ? () async {
+                                        await bluetoothPrint.disconnect();
+                                        setState(() {
+                                          _connected = false;
+                                          tips = 'Desconectado';
+                                        });
+                                      }
+                                    : null,
+                              ),
+                            ],
+                          ),
+                          OutlinedButton(
+                            child: Text('Imprimir Recibo'),
+                            onPressed: _connected
+                                ? () async {
+                                    Map<String, dynamic> config = Map();
+                                    config['width'] = 57;
+                                    config['height'] = -100;
+                                    config['gap'] = 2;
+                                    // fecha sin hora
+                                    String fecha = DateTime.now().toString();
+                                    fecha = fecha.substring(0, 10);
+                                    List<LineText> list = [];
+                                    // crear pdf
+                                    final pdf = pw.Document();
+                                    pdf.addPage(pw.MultiPage(
+                                      pageFormat: lib_pdf.PdfPageFormat(
+                                          8.5 * 72.0, 5 * 72.0),
+                                      margin:
+                                          pw.EdgeInsets.fromLTRB(0, 40, 155, 0),
+                                      build: (pw.Context context) {
+                                        return <pw.Widget>[
+                                          pw.Text(
+                                            'Recibo de Consumo',
+                                            textAlign: pw.TextAlign.center,
+                                            style: pw.TextStyle(
+                                                fontSize: 30,
+                                                fontWeight: pw.FontWeight.bold),
+                                          ),
+                                          pw.Text(
+                                            'GAD Municipal LORETO',
+                                            textAlign: pw.TextAlign.center,
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: pw.FontWeight.bold),
+                                          ),
+                                          pw.Text(
+                                            'Cuenta: ${usuario.numcuenta}',
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight:
+                                                    pw.FontWeight.normal),
+                                          ),
+                                          pw.Text(
+                                            'Medidor:${usuario.nummedidor}',
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight:
+                                                    pw.FontWeight.normal),
+                                          ),
+                                          pw.Text(
+                                            'Nombre: ${usuario.nombre}',
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight:
+                                                    pw.FontWeight.normal),
+                                          ),
+                                          pw.Text(
+                                            'Consumo anterior: ${usuario.lecturainicial} m³',
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight:
+                                                    pw.FontWeight.normal),
+                                          ),
+                                          pw.Text(
+                                            'Fecha:$fecha',
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight:
+                                                    pw.FontWeight.normal),
+                                          ),
+                                          pw.Text(
+                                            'Consumo actual :${usuario.consumo} m³',
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight:
+                                                    pw.FontWeight.normal),
+                                          ),
+                                          pw.Text(
+                                            '-----------------------------------------',
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: pw.FontWeight.bold),
+                                          ),
+                                        ];
+                                      },
+                                    ));
+
+                                    // guardar pdf
+                                    final filePdf = await File(
+                                        '${(await getExternalStorageDirectory()).path}/recibo.pdf');
+                                    await filePdf
+                                        .writeAsBytes(await pdf.save());
+
+                                    // convert pdf to image
+                                    Uint8List image =
+                                        await convertPdfToImage(filePdf.path);
+                                    // recortar alto de la image para que no se vea el encabezado
+
+                                    Uint8List image2 =
+                                        await Uint8List.sublistView(
+                                            image, 0, image.length - 3000);
+
+                                    final ByteData data =
+                                        ByteData.view(image2.buffer);
+
+                                    List<int> imageBytes = await data.buffer
+                                        .asUint8List(data.offsetInBytes,
+                                            data.lengthInBytes);
+                                    String base64 = base64Encode(imageBytes);
+
+                                    list.add(LineText(
+                                      type: LineText.TYPE_IMAGE,
+                                      content: base64,
+                                      x: 40,
+                                      y: 40,
+                                    ));
+                                    await bluetoothPrint.printLabel(
+                                        config, list);
+                                  }
+                                : null,
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }),
+        );
+      },
+    );
+  }
 
   final TextEditingController _searchQuery = TextEditingController();
   List<listitems> litems = [
@@ -352,10 +670,9 @@ class _capdatState extends State<capdat> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    //verbdusuario = await datab.getusertable();
-    leertabla();
     super.initState();
+    leertabla();
+    WidgetsBinding.instance.addPostFrameCallback((_) => initBluetooth());
   }
 
   void buscarElemento(String buscar) {
@@ -428,7 +745,7 @@ class _capdatState extends State<capdat> {
                     return dats(null, null);
                   }));
                 }),
-            title: Text('  RUTA  ' + (isCharging ? verbdusuario[0].ruta : '')),
+            title: Text('  RUTA  ${isCharging ? verbdusuario[0].ruta : ''}'),
             actions: <Widget>[
               IconButton(
                 icon: const Icon(Icons.search),
@@ -631,8 +948,7 @@ class _capdatState extends State<capdat> {
                                                               children: [
                                                                 Text(
                                                                   // e.title,
-                                                                  'Orden: ' +
-                                                                      e.ordruta,
+                                                                  'Orden: ${e.ordruta}',
                                                                   style: TextStyle(
                                                                       color: Colors
                                                                           .black,
@@ -653,8 +969,7 @@ class _capdatState extends State<capdat> {
                                                                           .bold),
                                                             ),
                                                             Text(
-                                                              '     Cuenta: ' +
-                                                                  e.numcuenta,
+                                                              '     Cuenta: ${e.numcuenta}',
                                                               style: TextStyle(
                                                                 color: Colors
                                                                     .black,
@@ -662,8 +977,7 @@ class _capdatState extends State<capdat> {
                                                               ),
                                                             ),
                                                             Text(
-                                                              'Número de medidor: ' +
-                                                                  e.nummedidor,
+                                                              'Número de medidor: ${e.nummedidor}',
                                                               style: TextStyle(
                                                                 color: Colors
                                                                     .black,
@@ -678,10 +992,7 @@ class _capdatState extends State<capdat> {
                                                                   Column(
                                                                       children: [
                                                                         Text(
-                                                                          'Última Lectura: ' +
-                                                                              e.lecturainicial +
-                                                                              '   Promedio: ' +
-                                                                              e.promedio,
+                                                                          'Última Lectura: ${e.lecturainicial}   Promedio: ${e.promedio}',
                                                                           style:
                                                                               TextStyle(
                                                                             color:
@@ -873,7 +1184,22 @@ class _capdatState extends State<capdat> {
                                                                                 'vacio'
                                                                             ? Text('Tomar Foto')
                                                                             : Text('Eliminar Foto')),
-                                                                  ])
+                                                                  ]),
+                                                              Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceEvenly,
+                                                                children: [
+                                                                  ElevatedButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        showPrintDialog(
+                                                                            e);
+                                                                      },
+                                                                      child: Text(
+                                                                          'Imprimir Consumo')),
+                                                                ],
+                                                              )
                                                             ],
                                                           ),
                                                         ],
@@ -892,6 +1218,48 @@ class _capdatState extends State<capdat> {
     );
   }
 }
+
+convertPdfToImage(String path) async {
+  final pdf1 = await render_pdf.PdfDocument.openFile(path);
+  final page = await pdf1.getPage(1);
+  final image = await page.render(
+    width: page.width,
+    height: page.height,
+    format: render_pdf.PdfPageImageFormat.png,
+    backgroundColor: '#FFFFFF',
+  );
+  // image to Uint8List
+  final bytes = image.bytes;
+  // Save the image to disk.
+
+  // final imagePath = '${(await getExternalStorageDirectory()).path}/recibo.png';
+  // final imageFile = File(imagePath);
+  // // save PdfPageImage to File .png
+  // imageFile.writeAsBytesSync(image);
+
+  return image.bytes;
+}
+// id: cargar[1],
+//       nombre: cargar[2],
+//       identificacion: cargar[3],
+//       numcuenta: cargar[4],
+//       nummedidor: cargar[5],
+//       marcamedidor: cargar[6],
+//       direccion: cargar[7],
+//       ruta: cargar[8],
+//       ordruta: cargar[9],
+//       ultconsumo: cargar[10],
+//       fechaultconsumo: cargar[11],
+//       promedio: cargar[12],
+//       idlector: cargar[13],
+//       tiempo: fecha,
+//       sensor: cargar[15],
+//       consumo: _consumo,
+//       novedad: novedadcons,
+//       cordenadax: coordenadas[0], //latitud
+//       cordenaday: coordenadas[1], //longitud
+//       img: cargar[20],
+//       lecturainicial: cargar[21]
 
 void eliminarFoto(usuario e) async {
   await datab.update(usuario(

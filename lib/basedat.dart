@@ -209,7 +209,6 @@ class datab {
     // rango +- 0.000036
     String rangoArriba = (double.parse(coordenadas[1]) + 0.000036).toString();
     String rangoAbajo = (double.parse(coordenadas[1]) - 0.000036).toString();
-
     for (int i = 0; i < veretiqueta.length && !encontrardatos; i++) {
       if (veretiqueta[i].cordenadax != 'vacio') {
         if ((veretiqueta[i].cordenadax == coordenadas[0] &&
