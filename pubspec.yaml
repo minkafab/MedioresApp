@@ -48,6 +48,9 @@ dependencies:
   csv: ^5.0.1
   dio: ^4.0.6
   shared_preferences: ^2.0.15
+  bluetooth_print: ^3.0.1
+  pdf: ^3.8.2
+  native_pdf_renderer: ^5.0.0+1
 
 dev_dependencies:
   flutter_test:

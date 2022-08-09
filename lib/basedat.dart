@@ -5,7 +5,7 @@ import 'package:milton/userdat.dart';
 import 'package:location/location.dart';
 
 bool seractivo = false;
-Location location = new Location();
+Location location = Location();
 PermissionStatus permiso;
 LocationData datolocal;
 
@@ -84,10 +84,7 @@ class datab {
     return database.delete("mesa", where: "id = ?", whereArgs: [id]);
   }
 
-  /*Future<int> remove(int id) async {
-    Database db = await instance.database;
-    return await db.delete('prub', where: 'id = ?', whereArgs: [id]);
-  }*/
+
 
   static Future<void> update(usuario _usuario) async {
     Database database = await _openDB();
@@ -96,12 +93,12 @@ class datab {
         where: "id = ?", whereArgs: [_usuario.id]);
   }
 
-  static Future<List<String>> getRutas() async {
-    Database database = await _openDB();
-    final List<Map<String, dynamic>> rutaMap =
-        await database.query("mesa", distinct: true, columns: ['ruta']);
-    return List.generate(rutaMap.length, (i) => rutaMap[i]['ruta']);
-  }
+  // static Future<List<String>> getRutas() async {
+  //   Database database = await _openDB();
+  //   final List<Map<String, dynamic>> rutaMap =
+  //       await database.query("mesa", distinct: true, columns: ['ruta']);
+  //   return List.generate(rutaMap.length, (i) => rutaMap[i]['ruta']);
+  // }
 
   static Future<List<usuario>> getusertable() async {
     Database database = await _openDB();
@@ -135,47 +132,47 @@ class datab {
             ));
   }
 
-  static Future verificardatos(String etiqueta) async {
-    List<usuario> veretiqueta;
-    //  bool encontrardatos = false;
-    //List cargar = [];
-    // int identificador = 0;
-    veretiqueta = await datab.getusertable();
+  // static Future verificardatos(String etiqueta) async {
+  //   List<usuario> veretiqueta;
+  //   //  bool encontrardatos = false;
+  //   //List cargar = [];
+  //   // int identificador = 0;
+  //   veretiqueta = await datab.getusertable();
 
-    for (int i = 0; i < veretiqueta.length; i++) {
-      if (veretiqueta[i].nummedidor == etiqueta) {
-        List cargar = [
-          true,
-          veretiqueta[i].id,
-          veretiqueta[i].nombre,
-          veretiqueta[i].identificacion,
-          veretiqueta[i].numcuenta,
-          veretiqueta[i].nummedidor,
-          veretiqueta[i].marcamedidor,
-          veretiqueta[i].direccion,
-          veretiqueta[i].ruta,
-          veretiqueta[i].ordruta,
-          veretiqueta[i].ultconsumo,
-          veretiqueta[i].fechaultconsumo,
-          veretiqueta[i].promedio,
-          veretiqueta[i].idlector,
-          veretiqueta[i].tiempo,
-          veretiqueta[i].sensor,
-          veretiqueta[i].consumo,
-          veretiqueta[i].novedad,
-          veretiqueta[i].cordenadax,
-          veretiqueta[i].cordenaday,
-          veretiqueta[i].img,
-          veretiqueta[i].lecturainicial,
-          veretiqueta[i].aclaracion
-        ];
-        return cargar;
-        // identificador = veretiqueta[i].id;
-      }
-    }
-    List cargar = [false];
-    return cargar;
-  }
+  //   for (int i = 0; i < veretiqueta.length; i++) {
+  //     if (veretiqueta[i].nummedidor == etiqueta) {
+  //       List cargar = [
+  //         true,
+  //         veretiqueta[i].id,
+  //         veretiqueta[i].nombre,
+  //         veretiqueta[i].identificacion,
+  //         veretiqueta[i].numcuenta,
+  //         veretiqueta[i].nummedidor,
+  //         veretiqueta[i].marcamedidor,
+  //         veretiqueta[i].direccion,
+  //         veretiqueta[i].ruta,
+  //         veretiqueta[i].ordruta,
+  //         veretiqueta[i].ultconsumo,
+  //         veretiqueta[i].fechaultconsumo,
+  //         veretiqueta[i].promedio,
+  //         veretiqueta[i].idlector,
+  //         veretiqueta[i].tiempo,
+  //         veretiqueta[i].sensor,
+  //         veretiqueta[i].consumo,
+  //         veretiqueta[i].novedad,
+  //         veretiqueta[i].cordenadax,
+  //         veretiqueta[i].cordenaday,
+  //         veretiqueta[i].img,
+  //         veretiqueta[i].lecturainicial,
+  //         veretiqueta[i].aclaracion
+  //       ];
+  //       return cargar;
+  //       // identificador = veretiqueta[i].id;
+  //     }
+  //   }
+  //   List cargar = [false];
+  //   return cargar;
+  // }
 
   static Future localizacion() async {
     List coordenadas = ["", ""];
@@ -234,17 +231,7 @@ class datab {
     }
   }
 
-  /*static Future verificarinternet() async{
 
-  }*/
-
-  // CON SENTENCIAS
-  /*static Future<void> insertar2(usuario _usuario) async {
-    Database database = await _openDB();
-    var resultado = await database.rawInsert(
-        "INSERT INTO animales (id, nombre, especie)"
-        " VALUES (${_usuario.id}, ${_usuario.nombre}, ${_usuario.especie})");
-  }*/
 }
 
 class novedad {

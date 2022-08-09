@@ -1,30 +1,21 @@
 //@dart=2.9
-import 'dart:ui';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:csv_reader/csv_reader.dart';
 import 'package:milton/map.dart';
-//import 'package:medidor/camara.dart';
 import 'package:milton/capdat.dart';
-//import 'package:medidor/datmanual.dart';
-//import 'package:/gpdf.dart';
-//import 'package:medidor/pruebadat.dart';
+
 import 'package:milton/basedat.dart';
 import 'package:milton/novedadesGenerales.dart';
-//import 'package:medidor/reconocimiento.dart';
 import 'package:milton/userdat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'package:csv/csv.dart';
-//import 'package:ext_storage/ext_storage.dart';
 
 class dats extends StatelessWidget {
   // final bool prueba = false;
@@ -236,12 +227,8 @@ class _datosState extends State<datos> {
       String fecha = '';
       fecha = getCurrentDate();
 
-      filenombre = fecha +
-          "_lect_" +
-          verbdusuario[0].idlector +
-          "_ruta_" +
-          verbdusuario[0].ruta.replaceAll(" ", "").replaceAll('"', "") +
-          ".csv";
+      filenombre =
+          "${fecha}_lect_${verbdusuario[0].idlector}_ruta_${verbdusuario[0].ruta.replaceAll(" ", "").replaceAll('"', "")}.csv";
 
       File f = File(path + "/" + filenombre);
 
@@ -262,7 +249,7 @@ class _datosState extends State<datos> {
           context: context,
           builder: (BuildContext context) {
             dialogcontex = context;
-            return AlertDialog(
+            return const AlertDialog(
               title: Text("Archivo enviado"),
             );
           });
@@ -409,54 +396,11 @@ class _datosState extends State<datos> {
     if (ejecutar == 4) {
       if (verbdusuario.length > 0) {
         if (funciones == true) {
-          // showDialog(
-          //     context: context,
-          //     builder: (BuildContext context) {
-          //       return AlertDialog(
-          //         title: const Text('Elejir ruta'),
-          //         content: DropdownButton<String>(
-          //           hint: const Text('Seleccione una ruta'),
-          //           value: rutas[0],
-          //           onChanged: (String newValue) {
-          //             setState(() {
-          //               rutaSelect = newValue;
-          //             });
-          //           },
-          //           items: rutas.isEmpty
-          //               ? DropdownMenuItem<String>(
-          //                   value: '0',
-          //                   child: Text("No hay rutas"),
-          //                 )
-          //               : rutas.map<DropdownMenuItem<String>>((String value) {
-          //                   return DropdownMenuItem<String>(
-          //                     value: value,
-          //                     child: Text(value),
-          //                   );
-          //                 }).toList(),
-          //         ),
-          //         actions: <Widget>[
-          //           FlatButton(
-          //             child: Text('Aceptar'),
-          //             onPressed: () async {
-          //               // guardar ruta seleccionada en la memoria interna del celular
-          //               final prefs = await SharedPreferences.getInstance();
-
           Navigator.of(context).pop();
           Navigator.push(context,
               MaterialPageRoute(builder: (BuildContext context) {
             return capdat();
           }));
-          //  },
-          // ),
-          //       FlatButton(
-          //         child: Text('Cancelar'),
-          //         onPressed: () {
-          //           Navigator.of(context).pop();
-          //         },
-          //       ),
-          //     ],
-          //   );
-          // });
         }
       } else {
         aviconsumo(1);
@@ -464,9 +408,6 @@ class _datosState extends State<datos> {
     }
     if (ejecutar == 5) {
       if (funciones == true) {
-        // mostrar alerta de que no hay lecturas
-        // verificar si existe usuarios sin consumo
-        // si existe usuarios sin consumo mostrar alerta de que no hay lecturas
         if (!hayConsumo()) {
           showDialog(
               context: context,
@@ -603,12 +544,7 @@ class _datosState extends State<datos> {
     String path = (await getExternalStorageDirectory()).path;
 
     String direccion = path + "/" + "archivo.csv";
-    await dio.download(
-        //'http://192.168.31.84/2022-06-23_lect_24_ruta_1010SIMONBOLIVAR.csv',
-        //2022-06-23_lect_22_ruta_0101REVOLUCION-CENTRAL.csv
-        // 'http://192.168.31.84/2022-06-23_lect_22_ruta_0101REVOLUCION-CENTRAL.csv',
-        ruta,
-        direccion);
+    await dio.download(ruta, direccion);
     final input = new File(direccion).openRead();
     final fields = await input
         .transform(utf8.decoder)
@@ -624,7 +560,7 @@ class _datosState extends State<datos> {
         cargarbase = true;
       } catch (e) {
         print(e);
-        print("no hay elementos cargados "); //si existiera algun error
+        print("no hay elementos cargados ");
         cargarbase = false;
       }
       if (cargarbase == true) {
@@ -755,24 +691,11 @@ class _datosState extends State<datos> {
   Future<void> _createPDF() async {
     PdfDocument document = PdfDocument();
     cargaruserpdf = await datab.getusertable();
-    //final page = document.pages.add(); //añade una hoja en el pdf
-
-    //page.graphics.drawString('Reporte', PdfStandardFont(PdfFontFamily.helvetica, 30));
-
-    /* page.graphics.drawImage(
-        PdfBitmap(await _readImageData('Pdf_Succinctly.jpg')),
-        Rect.fromLTWH(0, 100, 440, 550));*/
 
     PdfGrid grid = PdfGrid();
     grid.style = PdfGridStyle(
         font: PdfStandardFont(PdfFontFamily.helvetica, 10),
         cellPadding: PdfPaddings(left: 5, right: 2, top: 2, bottom: 2));
-
-    /*PdfGrid gridpaint = PdfGrid();
-    grid.style = PdfGridStyle(
-        font: PdfStandardFont(PdfFontFamily.helvetica, 20),
-        cellPadding: PdfPaddings(left: 5, right: 2, top: 2, bottom: 2),
-        backgroundBrush: PdfBrushes.seaGreen);*/
 
     grid.columns.add(count: 10);
     grid.headers.add(1);
@@ -816,14 +739,8 @@ class _datosState extends State<datos> {
 
     List<int> bytes = await document.save();
     document.dispose();
-
     saveAndLaunchFile(bytes, 'Reporte.pdf');
   }
-
-  /*Future<Uint8List> _readImageData(String name) async {
-    final data = await rootBundle.load('assets/$name');
-    return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-  }*/
 
   @override
   Widget build(BuildContext context) {

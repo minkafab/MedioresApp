@@ -1,8 +1,6 @@
 //@dart=2.9
-import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:convert';
-import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
 import 'package:milton/dats.dart';
@@ -27,31 +25,6 @@ class capdat extends StatefulWidget {
 
 class _capdatState extends State<capdat> {
   BluetoothPrint bluetoothPrint = BluetoothPrint.instance;
-  String caracteresEspeciales = "ÜüÁáÉéÍíÓóÚúÑñÅÆØåæø";
-  // caracteres especiales en Uint8s
-  List<int> codigoCaracteresEspeciales = [
-    0xDC,
-    0xFC,
-    0xC1,
-    0xE1,
-    0xC9,
-    0xE9,
-    0xCD,
-    0xED,
-    0xD3,
-    0xF3,
-    0xDA,
-    0xFA,
-    0xD1,
-    0xF1,
-    0xC5,
-    0xC6,
-    0xD8,
-    0xE5,
-    0xE6,
-    0xF8
-  ];
-
   bool _connected = false;
   BluetoothDevice _device;
   String tips = 'No hay impresora conectada';
@@ -68,24 +41,6 @@ class _capdatState extends State<capdat> {
   bool _isSearching = false;
   bool confirmacion = false;
   bool isCharging = false;
-
-  String stringToUint8List(String string) {
-    String s_sub;
-    if (string.length < 1) return string;
-    if (string == null) return string;
-
-    for (int i = 0; i < string.length; i++) {
-      //
-      s_sub = string.substring(i, i + 1);
-      if (caracteresEspeciales.contains(s_sub)) {
-        string = string.replaceRange(i, i + 1,
-            '${codigoCaracteresEspeciales[caracteresEspeciales.indexOf(s_sub)]}');
-      } else {
-        string = string.replaceRange(i, i + 1, s_sub);
-      }
-    }
-    return string;
-  }
 
   Future<void> initBluetooth() async {
     bluetoothPrint.startScan(timeout: Duration(seconds: 4));
@@ -561,18 +516,17 @@ class _capdatState extends State<capdat> {
         });
   }
 
-  Future verificaretiqueta(String nummed) async {
-    cargar = await datab.verificardatos(nummed); //7428
+  Future verificaretiqueta(usuario user) async {
+    //7428
 
     List coordenadas = await datab.localizacion();
-    await peticion(coordenadas[0], coordenadas[1], nummed);
+    await peticion(coordenadas[0], coordenadas[1], user.nummedidor);
 
     String novedadcons = 'Sin registro de lectura';
     int numnovedades = 0;
     try {
-      int promedio = int.parse(cargar[12]);
-      int consumoant = int.parse(cargar[21]);
-      print(cargar[21]);
+      int promedio = int.parse(user.promedio);
+      int consumoant = int.parse(user.lecturainicial);
       int consumoact = int.parse(_consumo);
 
       int valpromediosup = 0;
@@ -616,35 +570,32 @@ class _capdatState extends State<capdat> {
     String fecha = epochTime.toString();
 
     await datab.update(usuario(
-      id: cargar[1],
-      nombre: cargar[2],
-      identificacion: cargar[3],
-      numcuenta: cargar[4],
-      nummedidor: cargar[5],
-      marcamedidor: cargar[6],
-      direccion: cargar[7],
-      ruta: cargar[8],
-      ordruta: cargar[9],
-      ultconsumo: cargar[10],
-      fechaultconsumo: cargar[11],
-      promedio: cargar[12],
-      idlector: cargar[13],
-      tiempo: fecha,
-      sensor: cargar[15],
-      consumo: _consumo == '' ? '0' : _consumo,
-      novedad: novedadcons,
-      cordenadax: coordenadas[0], //latitud
-      cordenaday: coordenadas[1], //longitud
-      img: cargar[20],
-      lecturainicial: cargar[21],
-      aclaracion: cargar[22],
-    ));
+        id: user.id,
+        nombre: user.nombre,
+        identificacion: user.identificacion,
+        numcuenta: user.numcuenta,
+        nummedidor: user.nummedidor,
+        marcamedidor: user.marcamedidor,
+        direccion: user.direccion,
+        ruta: user.ruta,
+        ordruta: user.ordruta,
+        ultconsumo: user.ultconsumo,
+        fechaultconsumo: user.fechaultconsumo,
+        promedio: user.promedio,
+        idlector: user.idlector,
+        tiempo: fecha,
+        sensor: user.sensor,
+        consumo: _consumo == '' ? '0' : _consumo,
+        novedad: novedadcons,
+        cordenadax: coordenadas[0], //latitud
+        cordenaday: coordenadas[1], //longitud
+        img: user.img,
+        lecturainicial: user.lecturainicial,
+        aclaracion: user.aclaracion));
 
     aviconsumo(numnovedades);
-    setState(() {
-      _consumo = '';
-    });
-
+    _consumo = '';
+    setState(() {});
     refrescarUsuario();
   }
 
@@ -712,9 +663,8 @@ class _capdatState extends State<capdat> {
         //setear gridview a la cantidad de elementos encontrados
       });
     } else {
-      setState(() {
-        verbdusuario = verbdusuario2;
-      });
+      verbdusuario = verbdusuario2;
+      setState(() {});
     }
   }
 
@@ -1073,7 +1023,7 @@ class _capdatState extends State<capdat> {
                                                                           valcon =
                                                                               int.parse(_consumo);
                                                                           await verificaretiqueta(
-                                                                              e.nummedidor);
+                                                                              e);
                                                                         } catch (e) {
                                                                           avimconsumo();
                                                                         }
@@ -1161,7 +1111,7 @@ class _capdatState extends State<capdat> {
                                                                                 'vacio'
                                                                             ? () {
                                                                                 Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-                                                                                  return picture(e.nummedidor);
+                                                                                  return picture(e);
                                                                                 }));
                                                                               }
                                                                             : () async {
@@ -1228,38 +1178,9 @@ convertPdfToImage(String path) async {
     format: render_pdf.PdfPageImageFormat.png,
     backgroundColor: '#FFFFFF',
   );
-  // image to Uint8List
   final bytes = image.bytes;
-  // Save the image to disk.
-
-  // final imagePath = '${(await getExternalStorageDirectory()).path}/recibo.png';
-  // final imageFile = File(imagePath);
-  // // save PdfPageImage to File .png
-  // imageFile.writeAsBytesSync(image);
-
   return image.bytes;
 }
-// id: cargar[1],
-//       nombre: cargar[2],
-//       identificacion: cargar[3],
-//       numcuenta: cargar[4],
-//       nummedidor: cargar[5],
-//       marcamedidor: cargar[6],
-//       direccion: cargar[7],
-//       ruta: cargar[8],
-//       ordruta: cargar[9],
-//       ultconsumo: cargar[10],
-//       fechaultconsumo: cargar[11],
-//       promedio: cargar[12],
-//       idlector: cargar[13],
-//       tiempo: fecha,
-//       sensor: cargar[15],
-//       consumo: _consumo,
-//       novedad: novedadcons,
-//       cordenadax: coordenadas[0], //latitud
-//       cordenaday: coordenadas[1], //longitud
-//       img: cargar[20],
-//       lecturainicial: cargar[21]
 
 void eliminarFoto(usuario e) async {
   await datab.update(usuario(

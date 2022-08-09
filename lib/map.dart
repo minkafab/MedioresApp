@@ -12,8 +12,6 @@ class map extends StatefulWidget {
   final GeoPoint endLoc;
   final String address;
   map({this.address, this.endLoc});
-  //map({this.address, this.endLoc});
-  //const map({ Key? key }) : super(key: key);
 
   @override
   State<map> createState() => _mapState();
@@ -23,8 +21,6 @@ class _mapState extends State<map> {
   MapController controller;
   List<usuario> verbdusuario;
   List novedades;
-  // final GeoPoint endLoc;
-  //String address;
   RoadInfo _roadInfo = RoadInfo();
   String address = "unknown";
   bool mapaok = false;

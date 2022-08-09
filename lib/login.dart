@@ -1,11 +1,7 @@
 // @dart=2.9
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:milton/dats.dart';
-//import 'package:medidor/main.dart';
-//import 'package:medidor/MapScreen.dart';
-//import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 
@@ -22,32 +18,6 @@ class _loginState extends State<login> {
     _passwordVisible = false;
   }
 
-  /*Future encontrado() async {
-    switch (await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-            title: Text('Usuario Encontrado'),
-            content: Text('¿Continuar?'),
-            actions: [
-              CupertinoDialogAction(
-                onPressed: () {
-                  Navigator.pop(context, 'OK');
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        })) {
-      case 'OK':
-        // entcons = true;
-        Navigator.push(context,
-            MaterialPageRoute(builder: (BuildContext context) {
-          return dats();
-        }));
-        break;
-    }
-  }*/
 
   Future noencontrado(String novedad) async {
     switch (await showDialog(
@@ -72,9 +42,7 @@ class _loginState extends State<login> {
   }
 
   Future<void> peticion() async {
-    //entro = 'si';
-    /* Uri url = Uri.http('m2mlight.com', '/iot/lec_valida_usuario.php',
-        {'id_usuario': user, 'password': password});*/
+   
     Uri url = Uri.http('m2mlight.com', '/elchaco/app_login.php',
         {'user': user, 'password': password});
 

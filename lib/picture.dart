@@ -8,15 +8,11 @@ import 'package:milton/basedat.dart';
 import 'package:milton/capdat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:milton/userdat.dart';
-//import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:milton/main.dart';
-import 'package:milton/comunicacion.dart';
-import 'package:flutter/services.dart';
-import 'package:image_cropper/image_cropper.dart';
 
 class picture extends StatefulWidget {
-  final String idetiqueta;
+  final usuario idetiqueta;
   picture(this.idetiqueta);
   @override
   State<picture> createState() => _pictureState();
@@ -28,7 +24,7 @@ class _pictureState extends State<picture> {
   Future<void> initcamara;
   bool isWorking = false;
   XFile pictureFile;
-  List cargar = [];
+
   BuildContext dialogcontex;
 
   @override
@@ -87,41 +83,38 @@ class _pictureState extends State<picture> {
     }
   }
 
-  Future verificaretiqueta(String nummed, String code) async {
-    cargar = await datab.verificardatos(nummed); //7428
+  Future verificaretiqueta(usuario user, String code) async {
+    //7428
     List coordenadas = await datab.localizacion();
-    await peticion(coordenadas[0], coordenadas[1], nummed);
+    await peticion(coordenadas[0], coordenadas[1], user.nummedidor);
     DateTime now = DateTime.now();
     var epochTime = (now.millisecondsSinceEpoch / 1000).floor();
 
     String fecha = epochTime.toString();
 
     await datab.update(usuario(
-      id: cargar[1],
-      nombre: cargar[2],
-      identificacion: cargar[3],
-      numcuenta: cargar[4],
-      nummedidor: cargar[5],
-      marcamedidor: cargar[6],
-      direccion: cargar[7],
-      ruta: cargar[8],
-      ordruta: cargar[9],
-      ultconsumo: cargar[10],
-      fechaultconsumo: cargar[11],
-      promedio: cargar[12],
-      idlector: cargar[13],
+      id: user.id,
+      nombre: user.nombre,
+      identificacion: user.identificacion,
+      numcuenta: user.numcuenta,
+      nummedidor: user.nummedidor,
+      marcamedidor: user.marcamedidor,
+      direccion: user.direccion,
+      ruta: user.ruta,
+      ordruta: user.ordruta,
+      ultconsumo: user.ultconsumo,
+      fechaultconsumo: user.fechaultconsumo,
+      promedio: user.promedio,
+      idlector: user.idlector,
       tiempo: fecha,
-      sensor: cargar[15],
-      consumo: cargar[16],
-      novedad: cargar[17],
+      sensor: user.sensor,
+      consumo: user.consumo,
+      novedad: user.novedad,
       cordenadax: coordenadas[0], //latitud
       cordenaday: coordenadas[1], //longitud
       img: code,
-      lecturainicial: cargar[21],
-      aclaracion: cargar[22],
-
-      //consumo: _consumo,
-      //variacion: difvariacion
+      lecturainicial: user.lecturainicial,
+      aclaracion: user.aclaracion,
     ));
     await aviconsumo(1);
   }
