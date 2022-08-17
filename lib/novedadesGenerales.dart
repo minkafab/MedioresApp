@@ -109,7 +109,6 @@ class _NovedadesGeneralesState extends State<NovedadesGenerales> {
                                 if (snapshot.connectionState ==
                                     ConnectionState.done) {
                                   return CameraPreview(cameraController);
-
                                 }
                                 if (snapshot.hasError) {
                                   return Center(
@@ -160,17 +159,20 @@ class _NovedadesGeneralesState extends State<NovedadesGenerales> {
               child: Text("Agregar"),
               onPressed: () async {
                 // fecha y hora en numero de segundos
-                _novedad.tiempo =
-                    ((DateTime.now().millisecondsSinceEpoch / 1000).floor())
-                        .toString();
+                if (_novedad.descripcion != '') {
+                  _novedad.tiempo =
+                      ((DateTime.now().millisecondsSinceEpoch / 1000).floor())
+                          .toString();
 
-                List coordenadas = await datab.localizacion();
-                _novedad.latitud = coordenadas[0];
-                _novedad.longitud = coordenadas[1];
-                datab.insertNovedad(_novedad);
-
-                setState(() {});
-                Navigator.of(context).pop();
+                  List coordenadas = await datab.localizacion();
+                  _novedad.latitud = coordenadas[0];
+                  _novedad.longitud = coordenadas[1];
+                  datab.insertNovedad(_novedad);
+                  setState(() {});
+                  Navigator.of(context).pop();
+                } else {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
@@ -211,11 +213,13 @@ class _NovedadesGeneralesState extends State<NovedadesGenerales> {
                     child: ListTile(
                       title: Text(snapshot.data[index].descripcion),
                       subtitle: Text(date.toString()),
-                      leading: Image.memory(
-                        base64Decode(snapshot.data[index].imagen),
-                        height: 100,
-                        width: 100,
-                      ),
+                      leading: snapshot.data[index].imagen != ''
+                          ? Image.memory(
+                              base64Decode(snapshot.data[index].imagen),
+                              height: 100,
+                              width: 100,
+                            )
+                          : Text("No hay imagen"),
                       trailing: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
@@ -241,5 +245,3 @@ class _NovedadesGeneralesState extends State<NovedadesGenerales> {
     );
   }
 }
-
-

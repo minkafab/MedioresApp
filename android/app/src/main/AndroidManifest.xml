@@ -8,9 +8,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
    <application
         android:requestLegacyExternalStorage="true"
-        android:label="Minka: Lectura Medidores V1"
+        android:label="Minka - Medidores"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        >
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -18,6 +18,8 @@ import 'package:pdf/pdf.dart' as lib_pdf;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:native_pdf_renderer/native_pdf_renderer.dart' as render_pdf;
 
+import 'cam.dart';
+
 class capdat extends StatefulWidget {
   @override
   State<capdat> createState() => _capdatState();
@@ -520,7 +522,7 @@ class _capdatState extends State<capdat> {
     //7428
 
     List coordenadas = await datab.localizacion();
-    await peticion(coordenadas[0], coordenadas[1], user.nummedidor);
+    //await peticion(coordenadas[0], coordenadas[1], user.nummedidor);
 
     String novedadcons = 'Sin registro de lectura';
     int numnovedades = 0;
@@ -610,9 +612,8 @@ class _capdatState extends State<capdat> {
       if (_isSearching) {
         buscarElemento(ultimaBusqueda);
       }
-      setState(() {
-        isCharging = true;
-      });
+      isCharging = true;
+      setState(() {});
       refrescar = false;
     }
 
@@ -668,15 +669,12 @@ class _capdatState extends State<capdat> {
     }
   }
 
-  void refrescarUsuario() {
-    setState(() {
-      refrescar = true;
-      _consumo = '';
-    });
-    leertabla();
-    setState(() {
-      verbdusuario = verbdusuario2;
-    });
+  void refrescarUsuario() async {
+    refrescar = true;
+    _consumo = '';
+    await leertabla();
+    verbdusuario = verbdusuario2;
+    setState(() {});
   }
 
   @override
@@ -745,9 +743,8 @@ class _capdatState extends State<capdat> {
                   tooltip: 'Show Snackbar',
                   onPressed: () {
                     // eliminar el filtro de busqueda
-                    setState(() {
-                      _isSearching = false;
-                    });
+                    _isSearching = false;
+                    setState(() {});
                     refrescarUsuario();
                   })
             ],
@@ -781,11 +778,11 @@ class _capdatState extends State<capdat> {
                                 childAspectRatio: orientation !=
                                         Orientation.portrait
                                     ? MediaQuery.of(context).size.width < 1000
-                                        ? 1.5
+                                        ? 1.4
                                         : MediaQuery.of(context).size.width /
                                             (MediaQuery.of(context).size.height)
                                     : MediaQuery.of(context).size.height < 1000
-                                        ? 1.3
+                                        ? 1
                                         : MediaQuery.of(context).size.height /
                                             (MediaQuery.of(context).size.width),
 
@@ -793,7 +790,7 @@ class _capdatState extends State<capdat> {
                                     verbdusuario[0].nombre ==
                                             'No se encontraron resultados'
                                         ? ([
-                                            Text(
+                                            const Text(
                                               'No se encontraron resultados',
                                               style: TextStyle(
                                                   fontSize: 20,
@@ -853,17 +850,17 @@ class _capdatState extends State<capdat> {
                                                                             '0' &&
                                                                         e.img ==
                                                                             'vacio'
-                                                                    ? Color.fromRGBO(
+                                                                    ? const Color.fromRGBO(
                                                                         171,
                                                                         222,
                                                                         250,
                                                                         1)
-                                                                    : Color
-                                                                        .fromRGBO(
-                                                                            165,
-                                                                            238,
-                                                                            160,
-                                                                            1),
+                                                                    : const Color
+                                                                            .fromRGBO(
+                                                                        165,
+                                                                        238,
+                                                                        160,
+                                                                        1),
                                                                 borderRadius:
                                                                     BorderRadius.all(
                                                                         Radius.circular(
@@ -874,7 +871,7 @@ class _capdatState extends State<capdat> {
                                                                       .black,
                                                                   width: 1,
                                                                 ),
-                                                                boxShadow: [
+                                                                boxShadow: const [
                                                               BoxShadow(
                                                                 color: Colors
                                                                     .black45,
@@ -1135,6 +1132,27 @@ class _capdatState extends State<capdat> {
                                                                             ? Text('Tomar Foto')
                                                                             : Text('Eliminar Foto')),
                                                                   ]),
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceEvenly,
+                                                            children: [
+                                                              ElevatedButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(builder:
+                                                                            (BuildContext
+                                                                                context) {
+                                                                      return cam(
+                                                                          e);
+                                                                    }));
+                                                                  },
+                                                                  child: Text(
+                                                                      'Consumo Automatico ')),
                                                               Column(
                                                                 mainAxisAlignment:
                                                                     MainAxisAlignment
@@ -1151,7 +1169,7 @@ class _capdatState extends State<capdat> {
                                                                 ],
                                                               )
                                                             ],
-                                                          ),
+                                                          )
                                                         ],
                                                       )
                                                     ],

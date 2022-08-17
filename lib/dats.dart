@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:milton/map.dart';
 import 'package:milton/capdat.dart';
-
 import 'package:milton/basedat.dart';
 import 'package:milton/novedadesGenerales.dart';
 import 'package:milton/userdat.dart';
@@ -236,7 +235,7 @@ class _datosState extends State<datos> {
       await Future.delayed(Duration(seconds: 1));
       Navigator.pop(dialogcontex);
 
-      Uri url = Uri.https('m2mlight.com', '/elchaco/recibir_lecturas.php');
+      Uri url = Uri.https('m2mlight.com', '/minka/recibir_lecturas.php');
 
       var req = http.MultipartRequest('POST', url);
       req.files.add(
@@ -269,7 +268,7 @@ class _datosState extends State<datos> {
           });
       // eliminar el dialogo de espera
 
-      Uri url1 = Uri.https('m2mlight.com', '/elchaco/procesar_lecturas.php');
+      Uri url1 = Uri.https('m2mlight.com', '/minka/procesar_lecturas.php');
       var response = await http.post(url1, body: {
         "sensor_id": sensor,
         "latitud": cordenadax,
@@ -288,7 +287,7 @@ class _datosState extends State<datos> {
       List novedades = await datab.getnovedadtable();
 
       Uri url2 =
-          Uri.https('m2mlight.com', '/elchaco/leer_novedades_generales.php');
+          Uri.https('m2mlight.com', '/minka/leer_novedades_generales.php');
       // enviar datos de id_lector, tiempo, latitud, longitud, foto_novedad y observacion
       novedades.forEach((element) async {
         var response = await http.post(url2, body: {
@@ -299,7 +298,12 @@ class _datosState extends State<datos> {
           "foto_novedad": element.imagen,
           "observacion": element.descripcion,
         });
+
+        // ignore: avoid_print
+        print(response.body);
       });
+      // ignore: avoid_print
+      print(novedades);
       await datab.cleannovedadtable();
 
       await Future.delayed(Duration(seconds: 1));
@@ -714,10 +718,15 @@ class _datosState extends State<datos> {
 
     for (int i = 0; i < cargaruserpdf.length; i++) {
       PdfGridRow row = grid.rows.add();
+      if (cargaruserpdf[i].consumo != '0') {
+        row.style = PdfGridRowStyle(
+          backgroundBrush: PdfSolidBrush(PdfColor(144, 238, 144)),
+        );
+      }
       row.cells[0].value = cargaruserpdf[i].ordruta;
       row.cells[1].value = cargaruserpdf[i].nombre;
       row.cells[2].value = cargaruserpdf[i].nummedidor;
-      row.cells[3].value = "${cargaruserpdf[i].lecturainicial} m^3";
+      row.cells[3].value = "${cargaruserpdf[i].lecturainicial} m³";
       row.cells[4].value = cargaruserpdf[i].consumo;
       row.cells[5].value = cargaruserpdf[i].novedad;
       row.cells[6].value = cargaruserpdf[i].cordenadax;

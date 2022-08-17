@@ -18,7 +18,6 @@ class _loginState extends State<login> {
     _passwordVisible = false;
   }
 
-
   Future noencontrado(String novedad) async {
     switch (await showDialog(
         context: context,
@@ -42,8 +41,7 @@ class _loginState extends State<login> {
   }
 
   Future<void> peticion() async {
-   
-    Uri url = Uri.http('m2mlight.com', '/elchaco/app_login.php',
+    Uri url = Uri.http('m2mlight.com', '/minka/app_login.php',
         {'user': user, 'password': password});
 
     var respuesta = await http.get(url);
@@ -52,7 +50,7 @@ class _loginState extends State<login> {
     response = respuesta.body;
 
     Uri url1 = Uri.http(
-        'm2mlight.com', '/elchaco/dame_mi_ruta.php', {'id_user': response});
+        'm2mlight.com', '/minka/dame_mi_ruta.php', {'id_user': response});
 
     var ruta = await http.get(url1);
     String rutaresp = '';
@@ -100,7 +98,7 @@ class _loginState extends State<login> {
                     children: [
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 30),
-                        child: Text('Lectura Medidores V1.3',
+                        child: Text('Lectura Medidores V1.4',
                             style: TextStyle(
                               fontSize: MediaQuery.of(context).size.height / 25,
                               fontWeight: FontWeight.bold,

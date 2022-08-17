@@ -39,22 +39,20 @@ dependencies:
   http: ^0.13.4
   sqflite: ^2.0.2+1
   path_provider: ^2.0.10
-  syncfusion_flutter_pdf: ^20.1.58-beta
-  open_file: ^3.2.1
-  image_cropper: ^2.0.3
-  image: ^3.1.3
   location: ^4.4.0
-  csv_reader: ^1.0.2
-  csv: ^5.0.1
-  dio: ^4.0.6
-  shared_preferences: ^2.0.15
   bluetooth_print: ^3.0.1
   pdf: ^3.8.2
   native_pdf_renderer: ^5.0.0+1
+  syncfusion_flutter_pdf: ^20.2.43
+  open_file: ^3.2.1
+  csv: ^5.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
