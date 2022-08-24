@@ -239,23 +239,21 @@ class _capdatState extends State<capdat> {
         });
   }
 
-  Future verificaretiqueta(String nummed) async {
-    cargar = await datab.verificardatos(nummed); //7428
+  Future verificaretiqueta(usuario user) async {
+    //cargar = await datab.verificardatos(nummed); //7428
 
     List coordenadas = await datab.localizacion();
-    await peticion(coordenadas[0], coordenadas[1], nummed);
+    //await peticion(coordenadas[0], coordenadas[1], nummed);
 
     String novedadcons = 'Sin registro de lectura';
     int numnovedades = 0;
     try {
-      int promedio = int.parse(cargar[12]);
-      int consumoant = int.parse(cargar[21]);
-      print(cargar[21]);
+      int promedio = int.parse(user.promedio);
+      int consumoant = int.parse(user.lecturainicial);
       int consumoact = int.parse(_consumo);
 
       int valpromediosup = 0;
       int valpromediobaj = 0;
-
       if (consumoact >= consumoant) {
         valpromediosup = consumoant + promedio * 2;
         valpromediobaj = consumoant + (promedio * 0.3).toInt();
@@ -294,35 +292,32 @@ class _capdatState extends State<capdat> {
     String fecha = epochTime.toString();
 
     await datab.update(usuario(
-      id: cargar[1],
-      nombre: cargar[2],
-      identificacion: cargar[3],
-      numcuenta: cargar[4],
-      nummedidor: cargar[5],
-      marcamedidor: cargar[6],
-      direccion: cargar[7],
-      ruta: cargar[8],
-      ordruta: cargar[9],
-      ultconsumo: cargar[10],
-      fechaultconsumo: cargar[11],
-      promedio: cargar[12],
-      idlector: cargar[13],
-      tiempo: fecha,
-      sensor: cargar[15],
-      consumo: _consumo == '' ? '0' : _consumo,
-      novedad: novedadcons,
-      cordenadax: coordenadas[0], //latitud
-      cordenaday: coordenadas[1], //longitud
-      img: cargar[20],
-      lecturainicial: cargar[21],
-      aclaracion: cargar[22],
-    ));
+        id: user.id,
+        nombre: user.nombre,
+        identificacion: user.identificacion,
+        numcuenta: user.numcuenta,
+        nummedidor: user.nummedidor,
+        marcamedidor: user.marcamedidor,
+        direccion: user.direccion,
+        ruta: user.ruta,
+        ordruta: user.ordruta,
+        ultconsumo: user.ultconsumo,
+        fechaultconsumo: user.fechaultconsumo,
+        promedio: user.promedio,
+        idlector: user.idlector,
+        tiempo: fecha,
+        sensor: user.sensor,
+        consumo: _consumo == '' ? '0' : _consumo,
+        novedad: novedadcons,
+        cordenadax: coordenadas[0], //latitud
+        cordenaday: coordenadas[1], //longitud
+        img: user.img,
+        lecturainicial: user.lecturainicial,
+        aclaracion: user.aclaracion));
 
     aviconsumo(numnovedades);
-    setState(() {
-      _consumo = '';
-    });
-
+    _consumo = '';
+    setState(() {});
     refrescarUsuario();
   }
 
@@ -337,9 +332,8 @@ class _capdatState extends State<capdat> {
       if (_isSearching) {
         buscarElemento(ultimaBusqueda);
       }
-      setState(() {
-        isCharging = true;
-      });
+      isCharging = true;
+      setState(() {});
       refrescar = false;
     }
 
@@ -356,56 +350,47 @@ class _capdatState extends State<capdat> {
 
   void buscarElemento(String buscar) {
     if (buscar.isNotEmpty) {
-      setState(() {
-        _isSearching = true;
-        verbdusuario = verbdusuario2.where((element) {
-          return element.nummedidor
-              .toLowerCase()
-              .contains(buscar.toLowerCase());
-        }).toList();
-        if (verbdusuario.length == 0) {
-          verbdusuario.add(usuario(
-              id: 0,
-              nombre: 'No se encontraron resultados',
-              identificacion: '',
-              numcuenta: '',
-              nummedidor: '',
-              marcamedidor: '',
-              direccion: '',
-              ruta: verbdusuario2[0].ruta,
-              ordruta: '',
-              ultconsumo: '',
-              fechaultconsumo: '',
-              promedio: '',
-              idlector: '',
-              tiempo: '',
-              sensor: '',
-              consumo: '',
-              novedad: '',
-              cordenadax: '',
-              cordenaday: '',
-              img: '',
-              lecturainicial: '',
-              aclaracion: ''));
-        }
-        //setear gridview a la cantidad de elementos encontrados
-      });
+      _isSearching = true;
+      verbdusuario = verbdusuario2.where((element) {
+        return element.nummedidor.toLowerCase().contains(buscar.toLowerCase());
+      }).toList();
+      if (verbdusuario.length == 0) {
+        verbdusuario.add(usuario(
+            id: 0,
+            nombre: 'No se encontraron resultados',
+            identificacion: '',
+            numcuenta: '',
+            nummedidor: '',
+            marcamedidor: '',
+            direccion: '',
+            ruta: verbdusuario2[0].ruta,
+            ordruta: '',
+            ultconsumo: '',
+            fechaultconsumo: '',
+            promedio: '',
+            idlector: '',
+            tiempo: '',
+            sensor: '',
+            consumo: '',
+            novedad: '',
+            cordenadax: '',
+            cordenaday: '',
+            img: '',
+            lecturainicial: '',
+            aclaracion: ''));
+      }
     } else {
-      setState(() {
-        verbdusuario = verbdusuario2;
-      });
+      verbdusuario = verbdusuario2;
     }
+    setState(() {});
   }
 
-  void refrescarUsuario() {
-    setState(() {
-      refrescar = true;
-      _consumo = '';
-    });
-    leertabla();
-    setState(() {
-      verbdusuario = verbdusuario2;
-    });
+  void refrescarUsuario() async {
+    refrescar = true;
+    _consumo = '';
+    await leertabla();
+    verbdusuario = verbdusuario2;
+    setState(() {});
   }
 
   @override
@@ -424,7 +409,7 @@ class _capdatState extends State<capdat> {
                     return dats(null, null);
                   }));
                 }),
-            title: Text('  RUTA  ' + (isCharging ? verbdusuario[0].ruta : '')),
+            title: Text('  RUTA  ${isCharging ? verbdusuario[0].ruta : ''}'),
             actions: <Widget>[
               IconButton(
                 icon: const Icon(Icons.search),
@@ -437,11 +422,10 @@ class _capdatState extends State<capdat> {
                           title: Text('Buscar medidor'),
                           content: TextField(
                             onChanged: (value) {
-                              setState(() {
-                                ultimaBusqueda = value;
-                              });
+                              ultimaBusqueda = value;
                               buscar = value;
                               buscarElemento(buscar);
+                              setState(() {});
                             },
                             // buscar mientras se escribe
                           ),
@@ -450,10 +434,9 @@ class _capdatState extends State<capdat> {
                               child: Text('Cancelar'),
                               onPressed: () {
                                 // eliminar el dialogo
+                                verbdusuario = verbdusuario2;
+                                setState(() {});
                                 Navigator.of(context).pop();
-                                setState(() {
-                                  verbdusuario = verbdusuario2;
-                                });
                               },
                             ),
                             FlatButton(
@@ -474,9 +457,8 @@ class _capdatState extends State<capdat> {
                   tooltip: 'Show Snackbar',
                   onPressed: () {
                     // eliminar el filtro de busqueda
-                    setState(() {
-                      _isSearching = false;
-                    });
+                    _isSearching = false;
+                    setState(() {});
                     refrescarUsuario();
                   })
             ],
@@ -758,7 +740,7 @@ class _capdatState extends State<capdat> {
                                                                           valcon =
                                                                               int.parse(_consumo);
                                                                           await verificaretiqueta(
-                                                                              e.nummedidor);
+                                                                              e);
                                                                         } catch (e) {
                                                                           avimconsumo();
                                                                         }
@@ -846,7 +828,7 @@ class _capdatState extends State<capdat> {
                                                                                 'vacio'
                                                                             ? () {
                                                                                 Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-                                                                                  return picture(e.nummedidor);
+                                                                                  return picture(e);
                                                                                 }));
                                                                               }
                                                                             : () async {

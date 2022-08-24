@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +91,7 @@ class _NovedadesGeneralesState extends State<NovedadesGenerales> {
                   TextField(
                     maxLength: 40,
                     decoration: InputDecoration(
-                      labelText: "Descripcion",
+                      labelText: "Descripción",
                       border: OutlineInputBorder(),
                     ),
                     onChanged: (value) {
@@ -165,18 +164,20 @@ class _NovedadesGeneralesState extends State<NovedadesGenerales> {
             FlatButton(
               child: Text("Agregar"),
               onPressed: () async {
-                // fecha y hora en numero de segundos
-                _novedad.tiempo =
-                    ((DateTime.now().millisecondsSinceEpoch / 1000).floor())
-                        .toString();
+                if (_novedad.descripcion != '') {
+                  _novedad.tiempo =
+                      ((DateTime.now().millisecondsSinceEpoch / 1000).floor())
+                          .toString();
 
-                List coordenadas = await datab.localizacion();
-                _novedad.latitud = coordenadas[0];
-                _novedad.longitud = coordenadas[1];
-                datab.insertNovedad(_novedad);
-
-                setState(() {});
-                Navigator.of(context).pop();
+                  List coordenadas = await datab.localizacion();
+                  _novedad.latitud = coordenadas[0];
+                  _novedad.longitud = coordenadas[1];
+                  datab.insertNovedad(_novedad);
+                  setState(() {});
+                  Navigator.of(context).pop();
+                } else {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
@@ -217,11 +218,13 @@ class _NovedadesGeneralesState extends State<NovedadesGenerales> {
                     child: ListTile(
                       title: Text(snapshot.data[index].descripcion),
                       subtitle: Text(date.toString()),
-                      leading: Image.memory(
-                        base64Decode(snapshot.data[index].imagen),
-                        height: 100,
-                        width: 100,
-                      ),
+                      leading: snapshot.data[index].imagen != ''
+                          ? Image.memory(
+                              base64Decode(snapshot.data[index].imagen),
+                              height: 100,
+                              width: 100,
+                            )
+                          : Text("No hay imagen"),
                       trailing: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
