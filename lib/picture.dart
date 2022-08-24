@@ -11,9 +11,6 @@ import 'package:milton/userdat.dart';
 //import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:milton/main.dart';
-import 'package:milton/comunicacion.dart';
-import 'package:flutter/services.dart';
-import 'package:image_cropper/image_cropper.dart';
 
 class picture extends StatefulWidget {
   final String idetiqueta;

@@ -2,14 +2,9 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/rendering.dart';
-import 'package:milton/dats.dart';
 import 'package:flutter/material.dart';
 
-import 'package:path/path.dart';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:flutter/cupertino.dart';
 import 'package:milton/main.dart';
 
 import 'basedat.dart';

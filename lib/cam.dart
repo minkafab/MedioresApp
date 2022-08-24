@@ -7,8 +7,6 @@ import 'package:camera/camera.dart';
 //import 'package:water_meter/dats.dart';
 import 'package:milton/main.dart';
 import 'package:milton/comunicacion.dart';
-import 'package:flutter/services.dart';
-import 'package:image_cropper/image_cropper.dart';
 
 class cam extends StatefulWidget {
   final String idetiqueta;

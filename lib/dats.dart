@@ -1,9 +1,7 @@
 //@dart=2.9
-import 'dart:ui';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:csv_reader/csv_reader.dart';
 import 'package:milton/map.dart';
 //import 'package:medidor/camara.dart';
 import 'package:milton/capdat.dart';
@@ -16,8 +14,6 @@ import 'package:milton/novedadesGenerales.dart';
 import 'package:milton/userdat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';

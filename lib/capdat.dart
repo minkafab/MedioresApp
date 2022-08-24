@@ -1,14 +1,10 @@
 //@dart=2.9
-import 'dart:ffi';
 
-import 'package:flutter/rendering.dart';
 import 'package:milton/dats.dart';
 import 'package:flutter/material.dart';
 import 'package:milton/picture.dart';
 import 'package:milton/userdat.dart';
-import 'package:milton/cam.dart';
 import 'package:milton/basedat.dart';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 
