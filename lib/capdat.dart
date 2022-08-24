@@ -176,6 +176,11 @@ class _capdatState extends State<capdat> {
                             child: Text('Imprimir Recibo'),
                             onPressed: _connected
                                 ? () async {
+                                    // consumo total e.consumo-e.lecturainicial
+                                    int consumoTotal =
+                                        int.parse(usuario.consumo) -
+                                            int.parse(usuario.lecturainicial);
+
                                     Map<String, dynamic> config = Map();
                                     config['width'] = 57;
                                     config['height'] = -100;
@@ -190,7 +195,7 @@ class _capdatState extends State<capdat> {
                                       pageFormat: lib_pdf.PdfPageFormat(
                                           8.5 * 72.0, 5 * 72.0),
                                       margin:
-                                          pw.EdgeInsets.fromLTRB(0, 40, 155, 0),
+                                          pw.EdgeInsets.fromLTRB(0, 0, 155, 0),
                                       build: (pw.Context context) {
                                         return <pw.Widget>[
                                           pw.Text(
@@ -229,7 +234,7 @@ class _capdatState extends State<capdat> {
                                                     pw.FontWeight.normal),
                                           ),
                                           pw.Text(
-                                            'Consumo anterior: ${usuario.lecturainicial} m³',
+                                            'Lectura anterior: ${usuario.lecturainicial} m³',
                                             style: pw.TextStyle(
                                                 fontSize: 25,
                                                 fontWeight:
@@ -243,7 +248,14 @@ class _capdatState extends State<capdat> {
                                                     pw.FontWeight.normal),
                                           ),
                                           pw.Text(
-                                            'Consumo actual :${usuario.consumo} m³',
+                                            'Lectura actual :${usuario.consumo} m³',
+                                            style: pw.TextStyle(
+                                                fontSize: 25,
+                                                fontWeight:
+                                                    pw.FontWeight.normal),
+                                          ),
+                                          pw.Text(
+                                            'Consumo :$consumoTotal m³',
                                             style: pw.TextStyle(
                                                 fontSize: 25,
                                                 fontWeight:
