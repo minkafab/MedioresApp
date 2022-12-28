@@ -98,7 +98,7 @@ class _loginState extends State<login> {
                     children: [
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 30),
-                        child: Text('Lectura Medidores V1.4',
+                        child: Text('Lectura Medidores V1.4.2',
                             style: TextStyle(
                               fontSize: MediaQuery.of(context).size.height / 25,
                               fontWeight: FontWeight.bold,

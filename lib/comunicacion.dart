@@ -3,20 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
-//import 'dart:math';
-//import 'package:flutter/rendering.dart';
-//import 'package:google_ml_kit/google_ml_kit.dart';
-//*import 'package:camera/camera.dart';
-//import 'package:medidor/camara.dart';
 import 'package:milton/dats.dart';
 import 'package:milton/userdat.dart';
 import 'package:milton/basedat.dart';
 import 'package:flutter/cupertino.dart';
-//import 'package:opencv/opencv.dart';
 import 'package:http/http.dart' as http;
 
 class comunicacion extends StatefulWidget {
-  // const comunicacion({ Key? key }) : super(key: key);
   final String imgpath;
   final usuario idetiqueta;
 
@@ -152,79 +145,7 @@ class _comunicacionState extends State<comunicacion> {
     Navigator.pop(dialogcontex);
   }
 
-  // Future verificaretiqueta() async {
-  // //7428
-  //   if (_consumo == '') {
-  //     _consumo = resserver;
-  //   }
-  //   List coordenadas = await datab.localizacion();
-  //   String novedadcons = '';
-  //   int numnovedades = 0;
-  //   try {
-  //     int promedio = int.parse(widget.idetiqueta.promedio);
-  //     int consumoant = int.parse(widget.idetiqueta.lecturainicial);
-  //     int consumoact = int.parse(_consumo);
-  //     int valpromediosup = 0;
-  //     int valpromediobaj = 0;
-
-  //     if (consumoact > consumoant) {
-  //       consumoact = consumoact - consumoant;
-  //       valpromediosup = promedio * 2;
-  //       valpromediobaj = (promedio * 0.3).toInt();
-
-  //       if (consumoact >= valpromediosup) {
-  //         novedadcons = 'consumo promedio sobre rango estimado';
-  //         numnovedades = 1;
-  //       }
-
-  //       if (consumoact <= valpromediobaj) {
-  //         novedadcons = 'consumo promedio bajo el rango estimado';
-  //         numnovedades = 2;
-  //       }
-  //       if (consumoact > valpromediobaj && consumoact < valpromediosup) {
-  //         novedadcons = 'sin novedad';
-  //         numnovedades = 3;
-  //       }
-  //     } else {
-  //       novedadcons = 'consumo acumulado menor o igual al anterior';
-  //       numnovedades = 4;
-  //     }
-  //   } catch (e) {
-  //     novedadcons = 'error valores promedio';
-  //     numnovedades = 5;
-  //   }
-  //   DateTime now = DateTime.now();
-  //   var epochTime = (now.millisecondsSinceEpoch / 1000).floor();
-
-  //   String fecha = epochTime.toString();
-
-  //   await datab.update(usuario(
-  //     id: widget.idetiqueta.id,
-  //     nombre: widget.idetiqueta.nombre,
-  //     identificacion: widget.idetiqueta.identificacion,
-  //     numcuenta: widget.idetiqueta.numcuenta,
-  //     nummedidor: widget.idetiqueta.nummedidor,
-  //     marcamedidor: widget.idetiqueta.marcamedidor,
-  //     direccion: widget.idetiqueta.direccion,
-  //     ruta: widget.idetiqueta.ruta,
-  //     ordruta: widget.idetiqueta.ordruta,
-  //     ultconsumo: widget.idetiqueta.ultconsumo,
-  //     fechaultconsumo: widget.idetiqueta.fechaultconsumo,
-  //     promedio: widget.idetiqueta.promedio,
-  //     idlector: widget.idetiqueta.idlector,
-  //     tiempo: fecha,
-  //     sensor: widget.idetiqueta.sensor,
-  //     consumo: _consumo,
-  //     novedad: novedadcons,
-  //     cordenadax: coordenadas[0], //latitud
-  //     cordenaday: coordenadas[1], //longitud
-  //     img: widget.idetiqueta.img,
-  //     lecturainicial: widget.idetiqueta.lecturainicial,
-  //     aclaracion: widget.idetiqueta.aclaracion,
-  //   ));
-  //   await aviconsumo(numnovedades);
-  //   regresar();
-  // }
+  
   Future confirmarGuardado(String novedad) async {
     await showDialog(
         context: context,
@@ -369,18 +290,12 @@ class _comunicacionState extends State<comunicacion> {
   Future imgcortar(String direc) async {
     img.Image image = img.decodeJpg(File(direc).readAsBytesSync());
 
-    //int offsetY = ((MediaQuery.of(context).size.height) * 0.48).toInt();
-    //int offsetX = (((MediaQuery.of(context).size.width) * 0.5) - 75).toInt();
     int offsetY = (image.height * 0.4618).toInt();
     int offsetX = (image.width * 0.2917).toInt();
     int ancho = (image.width * 0.4166).toInt();
     int alto = (image.height * 0.0764).toInt();
     img.Image destImage = img.copyCrop(image, offsetX, offsetY, ancho, alto);
 
-    //img.grayscale(destImage);
-    //img.Image imggray = img.grayscale(destImage);
-
-    //resimg = await ImgProc.colorRGB2GRAY;
 
     var jpg = img.encodeJpg(destImage);
     // InputImage pruebaimg = destImage;

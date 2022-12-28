@@ -74,16 +74,9 @@ class _datosState extends State<datos> {
             child: Padding(
               padding: EdgeInsets.all(2),
               child: Column(
-                // height: MediaQuery.of(context).size.height,
-                // width: MediaQuery.of(context).size.width,
-                //mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-
                 children: [
                   Container(
-                    //color: Colors.transparent,
-                    //  mainAxisSize: MainAxisSize.min,
-                    // mainAxisAlignment: MainAxisAlignment.center,
                     child: CircularProgressIndicator(),
                   ),
                   Text(""),
@@ -193,6 +186,8 @@ class _datosState extends State<datos> {
       row.add("Tiempo");
       row.add("Consumo");
       row.add("Observaciones");
+      row.add("Latitud");
+      row.add("Longitud");
       rows.add(row);
 
       for (int i = 0; i < verbdusuario.length; i++) {
@@ -202,6 +197,8 @@ class _datosState extends State<datos> {
         row.add(verbdusuario[i].tiempo);
         row.add(verbdusuario[i].consumo);
         row.add(verbdusuario[i].novedad);
+        row.add(verbdusuario[i].cordenadax);
+        row.add(verbdusuario[i].cordenaday);
         rows.add(row);
       }
       //Mostrar que se esta generando el archivo

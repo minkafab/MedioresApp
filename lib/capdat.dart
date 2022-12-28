@@ -435,7 +435,6 @@ class _capdatState extends State<capdat> {
   }
 
   Future progreso() async {
-    // if()
     showDialog(
         context: context,
         builder: (BuildContext progcontext) {
@@ -445,16 +444,9 @@ class _capdatState extends State<capdat> {
             child: Padding(
               padding: EdgeInsets.all(2),
               child: Column(
-                // height: MediaQuery.of(context).size.height,
-                // width: MediaQuery.of(context).size.width,
-                //mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
-
                 children: [
                   Container(
-                    //color: Colors.transparent,
-                    //  mainAxisSize: MainAxisSize.min,
-                    // mainAxisAlignment: MainAxisAlignment.center,
                     child: CircularProgressIndicator(),
                   ),
                   Text(""),
@@ -645,8 +637,10 @@ class _capdatState extends State<capdat> {
         _isSearching = true;
         verbdusuario = verbdusuario2.where((element) {
           return element.nummedidor
-              .toLowerCase()
-              .contains(buscar.toLowerCase());
+                  .toLowerCase()
+                  .contains(buscar.toLowerCase()) ||
+              element.numcuenta.toLowerCase().contains(buscar.toLowerCase()) ||
+              element.nombre.toLowerCase().contains(buscar.toLowerCase());
         }).toList();
         if (verbdusuario.length == 0) {
           verbdusuario.add(usuario(
@@ -715,7 +709,7 @@ class _capdatState extends State<capdat> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Buscar medidor'),
+                          title: Text('Buscar Cuenta/Medidor'),
                           content: TextField(
                             onChanged: (value) {
                               setState(() {

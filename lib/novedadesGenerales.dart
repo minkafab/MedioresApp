@@ -91,7 +91,7 @@ class _NovedadesGeneralesState extends State<NovedadesGenerales> {
                   TextField(
                     maxLength: 40,
                     decoration: InputDecoration(
-                      labelText: "Descripcion",
+                      labelText: "Descripción",
                       border: OutlineInputBorder(),
                     ),
                     onChanged: (value) {

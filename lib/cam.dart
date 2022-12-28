@@ -33,14 +33,7 @@ class _camState extends State<cam> {
     //cameras = availableCameras();
     cameraController = CameraController(cameras[0], ResolutionPreset.high);
     initcamara = cameraController.initialize();
-    /* initcamara.then((value) => cameraController.startImageStream((streamimg) {
-          // if (isWorking == false) {
-          // isWorking = true;
-          imgCamera = streamimg;
-
-          //  runModelOnStreamFrames();
-          //}
-        }));*/
+   
   }
 
   @override
@@ -54,11 +47,6 @@ class _camState extends State<cam> {
   Widget build(BuildContext context) {
     String imagePath = '';
     String imgdir = '';
-
-    //MaterialApp(
-    //debugShowCheckedModeBanner: false,
-
-    // home: SafeArea(
 
     return Scaffold(
         appBar: AppBar(
